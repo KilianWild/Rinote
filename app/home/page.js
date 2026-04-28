@@ -5,7 +5,7 @@ import useGesture from "../../hooks/useGesture";
 import { useGlobalContext } from "../global-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Home() {
+export function HomeContent() {
   const { notes, setNotes } = useGlobalContext();
   const router = useRouter();
   const searchparams = useSearchParams();
@@ -20,10 +20,16 @@ export default function Home() {
   });
 
   return (
+    <section className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4">
+      <NoteForm noteToEdit={noteToEdit} />
+    </section>
+  );
+}
+
+export default function Home() {
+  return (
     <Suspense>
-      <section className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4">
-        <NoteForm noteToEdit={noteToEdit} />
-      </section>
+      <HomeContent />
     </Suspense>
   );
 }
