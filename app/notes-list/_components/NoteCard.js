@@ -1,22 +1,60 @@
 "use client";
 import { useState } from "react";
+import { useRef } from "react";
+import { useEffect } from "react";
 
-export default function NoteCard({ note, onMenubuttonClick }) {
-  console.log("note ", note);
+export default function NoteCard({ note, onClickEdit, onClickDelete }) {
+  const [menuExpanded, setMenuExpanded] = useState(false);
+  const menuRef = useRef(null);
 
-  function handleMenubuttonClick() {}
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target))
+        setMenuExpanded(false);
+    }
+
+    window.addEventListener("click", (event) => handleClickOutside(event));
+  }, []);
+
   return (
-    <li className="relative h-64 w-full bg-zinc-900">
-      <button
-        onClick={handleMenubuttonClick}
-        className="rounded- absolute right-0 flex h-5 w-9 flex-col justify-between rounded-sm border border-zinc-700 bg-zinc-800 p-1"
-      >
-        <span className="h-px w-full bg-zinc-400"></span>
-        <span className="h-px w-full bg-zinc-400"></span>
-        <span className="h-px w-full bg-zinc-400"></span>
-      </button>
+    <li
+      onDoubleClick={() => onClickEdit(note.id)}
+      className="relative h-64 w-full bg-zinc-900"
+    >
+      <div ref={menuRef}>
+        <button
+          onClick={() => setMenuExpanded((prev) => !prev)}
+          className="absolute right-0 flex h-5 w-9 flex-col justify-between rounded-sm border border-zinc-700 bg-zinc-800 p-1"
+        >
+          <span className="h-px w-full bg-zinc-400"></span>
+          <span className="h-px w-full bg-zinc-400"></span>
+          <span className="h-px w-full bg-zinc-400"></span>
+        </button>
+        {menuExpanded && (
+          <div className="absolute right-0 flex h-14 w-20 flex-col border border-zinc-700 bg-zinc-800">
+            <button
+              onClick={() => onClickEdit(note.id)}
+              className="0 w-full flex-1 border-b border-zinc-700"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onClickDelete(note.id)}
+              className="w-full flex-1"
+            >
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+
       <h3 className="absolute top-1 left-2">{note.title}</h3>
-      <h4 className="absolute right-2 bottom-1">Question</h4>
+      <p className="absolute top-10 left-2 whitespace-pre-line">
+        {note.text.length > 250
+          ? text.slice(0, 250).replace(/\r?\n/g, " ").trim() + " ..."
+          : note.text.replace(/\r?\n/g, " ").trim()}
+      </p>
+      <h4 className="absolute right-2 bottom-1">{note.inquiry}</h4>
     </li>
   );
 }
