@@ -3,7 +3,7 @@ import NoteCard from "./NoteCard";
 import { useGlobalContext } from "@/app/global-provider";
 import { useState, useEffect } from "react";
 
-export default function NoteCardList({}) {
+export default function NoteCardList({ handleClickEdit, handleClickDelete }) {
   const { notes, setNotes } = useGlobalContext();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -16,7 +16,14 @@ export default function NoteCardList({}) {
   return (
     <ul className="flex flex-col gap-2 p-4">
       {notes.map((note, index) => {
-        return <NoteCard note={note} key={index} />;
+        return (
+          <NoteCard
+            onClickEdit={handleClickEdit}
+            onClickDelete={handleClickDelete}
+            note={note}
+            key={index}
+          />
+        );
       })}
     </ul>
   );

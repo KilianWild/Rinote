@@ -1,8 +1,22 @@
 "use client";
 import { useGlobalContext } from "@/app/global-provider";
+import { useEffect } from "react";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
 
-export default function NoteForm({}) {
+export default function NoteForm({ noteToEdit }) {
+  const router = useRouter();
+  const formDefault = {
+    title: "",
+    text: "",
+    inquiry: "",
+  };
   const { notes, setNotes } = useGlobalContext();
+  const [mounted, setMounted] = useState(false);
+  const [formData, setFormData] = useState(formDefault);
+
+  const isEditing = mounted && !!noteToEdit;
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -10,10 +24,31 @@ export default function NoteForm({}) {
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
-    setNotes([...notes, data]);
+    const newNote = { id: uuidv4(), ...data };
 
-    event.target.reset();
+    if (!noteToEdit) setNotes([newNote, ...notes]);
+    else
+      setNotes(
+        notes.map((note) =>
+          note.id === noteToEdit.id ? { id: note.id, ...data } : note,
+        ),
+      );
+
+    setFormData(formDefault);
   }
+
+  function handleClearForm() {
+    setFormData(formDefault);
+    if (isEditing) router.push("/home");
+  }
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (noteToEdit) setFormData(noteToEdit);
+  }, [noteToEdit]);
 
   return (
     <form
@@ -27,12 +62,20 @@ export default function NoteForm({}) {
       <input
         name="title"
         type="text"
+        value={formData.title}
+        onChange={(event) => {
+          setFormData((prev) => ({ ...prev, title: event.target.value }));
+        }}
         placeholder="Title"
         className="mt-3 w-[80%] border-b-2 border-[#4a4a6a] p-2 text-sm focus:outline-none"
       />
 
       <textarea
         name="text"
+        value={formData.text}
+        onChange={(event) =>
+          setFormData((prev) => ({ ...prev, text: event.target.value }))
+        }
         placeholder="Write your note..."
         className="notebook mt-3 mb-0 flex-1 resize-none rounded border-none px-2 pb-2 text-sm focus:outline-none"
       />
@@ -40,28 +83,27 @@ export default function NoteForm({}) {
       <input
         name="inquiry"
         type="text"
+        onChange={(event) =>
+          setFormData((prev) => ({ ...prev, inquiry: event.target.value }))
+        }
+        value={formData.inquiry}
         placeholder="Theme of Inquiry"
         className="right-0 mt-0 w-[80%] self-end border-b-2 border-[#4a4a6a] px-2 pb-2 text-sm focus:outline-none"
       />
 
       <div className="mt-10 flex flex-row justify-center gap-3">
         <button
-          type="submit"
+          type="button"
+          onClick={handleClearForm}
           className="rounded bg-teal-600 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-300"
         >
-          Mic
+          {isEditing ? "Cancel" : "Clear"}
         </button>
         <button
           type="submit"
           className="rounded bg-teal-600 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-300"
         >
-          Save Note
-        </button>
-        <button
-          type="submit"
-          className="rounded bg-teal-600 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-300"
-        >
-          Photo
+          {isEditing ? "Update Note" : "Save Note"}
         </button>
       </div>
     </form>
