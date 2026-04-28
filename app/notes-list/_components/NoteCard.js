@@ -51,7 +51,7 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
       <h3 className="absolute top-1 left-2">{note.title}</h3>
       <p className="absolute top-10 left-2 whitespace-pre-line">
         {note.text.length > 250
-          ? text.slice(0, 250).replace(/\r?\n/g, " ").trim() + " ..."
+          ? note.text.slice(0, 250).replace(/\r?\n/g, " ").trim() + " ..."
           : note.text.replace(/\r?\n/g, " ").trim()}
       </p>
       <h4 className="absolute right-2 bottom-1">{note.inquiry}</h4>
