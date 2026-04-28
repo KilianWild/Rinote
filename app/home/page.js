@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import NoteForm from "./_components/NoteForm";
 import useGesture from "../../hooks/useGesture";
 import { useGlobalContext } from "../global-provider";
@@ -19,8 +20,10 @@ export default function Home() {
   });
 
   return (
-    <section className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4">
-      <NoteForm noteToEdit={noteToEdit} />
-    </section>
+    <Suspense>
+      <section className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4">
+        <NoteForm noteToEdit={noteToEdit} />
+      </section>
+    </Suspense>
   );
 }
