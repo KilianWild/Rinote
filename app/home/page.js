@@ -12,11 +12,7 @@ export function HomeContent() {
 
   const editId = searchparams.get("editid");
 
-  const noteToEdit = notes.find((note) => {
-    console.log("note._id", note._id);
-    console.log("editId", editId);
-    return note._id === editId;
-  });
+  const noteToEdit = notes.find((note) => note._id === editId);
 
   useGesture(50, (direction) => {
     if (direction === "right") router.push("/notes-list");

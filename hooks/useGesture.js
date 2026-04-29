@@ -1,18 +1,24 @@
-/**
- **´Custom hook that detects swipe gestures
- *
- * Prepared for mobile navigation
- *
- * @param {number} threshold - Minimum pixel distance required to count as a swipe
- * @param {(direction: "up" | "down" | "left" | "right ) => void} onSwipe - Callback triggered when swipe is detected
- * @returns {void}
- */
-//-------------------------------------------------------------------------------------------------------------------
-
 "use client";
 import { useEffect } from "react";
 import { useRef } from "react";
 
+/**
+ * **Custom hook that detects swipe gestures**
+ *
+ * Prepared for mobile navigation
+ * 
+ * ---
+ * @param {number} threshold - Minimum pixel distance required to count as a swipe
+ * @param {(direction: "up" | "down" | "left" | "right" ) => void} onSwipe - Callback triggered when swipe is detected
+ * @returns {void}
+ * ---
+ * @example
+ * ```js
+ *  useGesture(50, (direction) => {
+      if (direction === "right") router.push("/notes-list");
+    });
+ */
+//-------------------------------------------------------------------------------------------------------------------
 export default function useGesture(threshold, onSwipe) {
   const startPos = useRef({ x: 0, y: 0, time: 0 });
   const hasSwiped = useRef(false);
