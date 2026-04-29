@@ -11,15 +11,12 @@ export async function GET() {
 export async function POST(request) {
   await dbConnect();
 
-  console.log("POST");
-
   try {
     const body = await request.json();
-    console.log("POST body:", body); // 👈 add t
     const note = await Note.create(body);
+
     return Response.json(note, { status: 201 });
   } catch (error) {
-    console.log("POST error:", error.message); // 👈 and this
     return Response.json({ error: error.message }, { status: 400 });
   }
 }

@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
 
 export default function NoteForm({ noteToEdit }) {
   const router = useRouter();
@@ -29,7 +27,7 @@ export default function NoteForm({ noteToEdit }) {
 
     const newNote = { _id: !noteToEdit ? uuidv4() : noteToEdit._id, ...data };
 
-    //---< Local Storage Handling >---
+    //---< local storage handling >---
     if (!noteToEdit) setNotes([newNote, ...notes]);
     else
       setNotes(
@@ -38,7 +36,7 @@ export default function NoteForm({ noteToEdit }) {
         ),
       );
 
-    //---< Database Handling >---
+    //---< database handling >---
     const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
     const method = noteToEdit ? "PUT" : "POST";
 

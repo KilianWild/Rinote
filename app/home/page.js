@@ -12,7 +12,6 @@ export function HomeContent() {
 
   const editId = searchparams.get("editid");
 
-  //const isEditMode = Boolean(editId);
   const noteToEdit = notes.find((note) => {
     console.log("note._id", note._id);
     console.log("editId", editId);

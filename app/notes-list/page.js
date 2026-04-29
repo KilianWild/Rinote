@@ -13,8 +13,21 @@ export default function NoteList() {
     router.push(`/home?editid=${noteToEdit._id}`);
   }
 
-  function handleClickDelete(id) {
-    setNotes((prev) => prev.filter((note) => (note._id !== id ? item : null)));
+  async function handleClickDelete(id) {
+    //---< database handling >---
+    const url = `/api/notes/${id}`;
+    const method = "DELETE";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      throw new Error(`${res.status} - Failed to delete note!`);
+    }
+
+    setNotes((prev) => prev.filter((note) => (note._id !== id ? note : null)));
   }
 
   useGesture(50, (direction) => {
