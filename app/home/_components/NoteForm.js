@@ -36,7 +36,7 @@ export default function NoteForm({ noteToEdit }) {
         ),
       );
 
-    //---< database handling >---
+    //---< database handling - "PUT" , "POST" >---
     const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
     const method = noteToEdit ? "PUT" : "POST";
 

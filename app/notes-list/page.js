@@ -14,7 +14,7 @@ export default function NoteList() {
   }
 
   async function handleClickDelete(id) {
-    //---< database handling >---
+    //---< database handling - "DELETE" >---
     const url = `/api/notes/${id}`;
     const method = "DELETE";
 
