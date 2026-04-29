@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 
 export default function NoteForm({ noteToEdit }) {
   const router = useRouter();
@@ -18,21 +20,40 @@ export default function NoteForm({ noteToEdit }) {
 
   const isEditing = mounted && !!noteToEdit;
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
-    const newNote = { id: uuidv4(), ...data };
+    const newNote = { _id: uuidv4(), ...data };
 
+    //---< Local Storage Handling >---
     if (!noteToEdit) setNotes([newNote, ...notes]);
     else
       setNotes(
         notes.map((note) =>
-          note.id === noteToEdit.id ? { id: note.id, ...data } : note,
+          note._id === noteToEdit._id ? { _id: note.id, ...data } : note,
         ),
       );
+
+    //---< Database Handling >---
+    const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
+    const method = noteToEdit ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newNote),
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        noteToEdit
+          ? `${res.status} - Failed to update note!`
+          : `${res.status} - Failed to add note!`,
+      );
+    }
 
     setFormData(formDefault);
   }

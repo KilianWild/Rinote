@@ -9,12 +9,13 @@ export default function NoteList() {
   const { notes, setNotes } = useGlobalContext();
 
   function handleClickEdit(id) {
-    const noteToEdit = notes.find((note) => note.id === id);
+    const noteToEdit = notes.find((note) => note._id === id);
+    console.log("noteToEdit fomr handle CLick Edit", noteToEdit);
     router.push(`/home?editid=${noteToEdit.id}`);
   }
 
   function handleClickDelete(id) {
-    setNotes((prev) => prev.filter((item) => (item.id !== id ? item : null)));
+    setNotes((prev) => prev.filter((note) => (note._id !== id ? item : null)));
   }
 
   useGesture(50, (direction) => {

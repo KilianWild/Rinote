@@ -18,7 +18,7 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
 
   return (
     <li
-      onDoubleClick={() => onClickEdit(note.id)}
+      onDoubleClick={() => onClickEdit(note._id)}
       className="relative h-64 w-full bg-zinc-900"
     >
       <div ref={menuRef}>
@@ -33,13 +33,13 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
         {menuExpanded && (
           <div className="absolute right-0 flex h-14 w-20 flex-col border border-zinc-700 bg-zinc-800">
             <button
-              onClick={() => onClickEdit(note.id)}
+              onClick={() => onClickEdit(note._id)}
               className="0 w-full flex-1 border-b border-zinc-700"
             >
               Edit
             </button>
             <button
-              onClick={() => onClickDelete(note.id)}
+              onClick={() => onClickDelete(note._id)}
               className="w-full flex-1"
             >
               Delete
