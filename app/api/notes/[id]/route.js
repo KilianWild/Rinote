@@ -4,16 +4,20 @@ import Note from "@/db/models/Note";
 export async function PUT(request, { params }) {
   await dbConnect();
 
+  const { id } = await params;
   const body = await request.json();
-  const updated = await Note.findByIdAndUpdate(params.id, body, { new: true });
+  const updated = await Note.findByIdAndUpdate(id, body, {
+    returnDocument: "after",
+  });
 
   return Response.json(updated);
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(_, { params }) {
   await dbConnect();
 
-  const deleted = await Note.findByIdAndDelete(params.id);
+  const { id } = await params;
+  const deleted = await Note.findByIdAndDelete(id);
 
   return Response.json(
     { message: "Deleted successfully", deleted },

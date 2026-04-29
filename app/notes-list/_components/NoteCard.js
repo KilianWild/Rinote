@@ -8,6 +8,7 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
   const menuRef = useRef(null);
 
   useEffect(() => {
+    //---< close menu by click outside >---
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target))
         setMenuExpanded(false);
@@ -16,6 +17,8 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
     window.addEventListener("click", (event) => handleClickOutside(event));
   }, []);
 
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <li
       onDoubleClick={() => onClickEdit(note._id)}

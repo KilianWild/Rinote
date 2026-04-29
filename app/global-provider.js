@@ -24,6 +24,8 @@ export function GlobalProvider({ children }) {
     return res.json();
   };
 
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <GlobalContext.Provider value={{ notes, setNotes }}>
       {children}

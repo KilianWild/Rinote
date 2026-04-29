@@ -18,6 +18,7 @@ export default function NoteForm({ noteToEdit }) {
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState(formDefault);
 
+  //---< get stable "isEditing" state >---
   const isEditing = mounted && !!noteToEdit;
 
   async function handleSubmit(event) {
@@ -26,7 +27,7 @@ export default function NoteForm({ noteToEdit }) {
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
-    const newNote = { _id: uuidv4(), ...data };
+    const newNote = { _id: !noteToEdit ? uuidv4() : noteToEdit._id, ...data };
 
     //---< Local Storage Handling >---
     if (!noteToEdit) setNotes([newNote, ...notes]);
@@ -55,6 +56,7 @@ export default function NoteForm({ noteToEdit }) {
       );
     }
 
+    //---< reset form >---
     setFormData(formDefault);
   }
 
@@ -63,14 +65,18 @@ export default function NoteForm({ noteToEdit }) {
     if (isEditing) router.push("/home");
   }
 
+  //---< wait for mounting complete >---
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  //---< fill form with "noteToEdit" >---
   useEffect(() => {
     if (noteToEdit) setFormData(noteToEdit);
   }, [noteToEdit]);
 
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <form
       onSubmit={handleSubmit}
