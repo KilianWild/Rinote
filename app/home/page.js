@@ -12,13 +12,14 @@ export function HomeContent() {
 
   const editId = searchparams.get("editid");
 
-  //const isEditMode = Boolean(editId);
-  const noteToEdit = notes.find((note) => note.id === editId);
+  const noteToEdit = notes.find((note) => note._id === editId);
 
   useGesture(50, (direction) => {
     if (direction === "right") router.push("/notes-list");
   });
 
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <section className="flex h-screen w-full items-center justify-center bg-zinc-950 p-4">
       <NoteForm noteToEdit={noteToEdit} />

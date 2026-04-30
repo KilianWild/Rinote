@@ -9,17 +9,33 @@ export default function NoteList() {
   const { notes, setNotes } = useGlobalContext();
 
   function handleClickEdit(id) {
-    const noteToEdit = notes.find((note) => note.id === id);
-    router.push(`/home?editid=${noteToEdit.id}`);
+    const noteToEdit = notes.find((note) => note._id === id);
+    router.push(`/home?editid=${noteToEdit._id}`);
   }
 
-  function handleClickDelete(id) {
-    setNotes((prev) => prev.filter((item) => (item.id !== id ? item : null)));
+  async function handleClickDelete(id) {
+    //---< database handling - "DELETE" >---
+    const url = `/api/notes/${id}`;
+    const method = "DELETE";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      throw new Error(`${res.status} - Failed to delete note!`);
+    }
+
+    setNotes((prev) => prev.filter((note) => (note._id !== id ? note : null)));
   }
 
   useGesture(50, (direction) => {
     if (direction === "left") router.push("/home");
   });
+
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <>
       <NoteCardList

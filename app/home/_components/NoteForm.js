@@ -16,24 +16,45 @@ export default function NoteForm({ noteToEdit }) {
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState(formDefault);
 
+  //---< get stable "isEditing" state >---
   const isEditing = mounted && !!noteToEdit;
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
-    const newNote = { id: uuidv4(), ...data };
+    const newNote = { _id: !noteToEdit ? uuidv4() : noteToEdit._id, ...data };
 
+    //---< local storage handling >---
     if (!noteToEdit) setNotes([newNote, ...notes]);
     else
       setNotes(
         notes.map((note) =>
-          note.id === noteToEdit.id ? { id: note.id, ...data } : note,
+          note._id === noteToEdit._id ? { _id: note.id, ...data } : note,
         ),
       );
 
+    //---< database handling - "PUT" , "POST" >---
+    const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
+    const method = noteToEdit ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newNote),
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        noteToEdit
+          ? `${res.status} - Failed to update note!`
+          : `${res.status} - Failed to add note!`,
+      );
+    }
+
+    //---< reset form >---
     setFormData(formDefault);
   }
 
@@ -42,14 +63,18 @@ export default function NoteForm({ noteToEdit }) {
     if (isEditing) router.push("/home");
   }
 
+  //---< wait for mounting complete >---
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  //---< fill form with "noteToEdit" >---
   useEffect(() => {
     if (noteToEdit) setFormData(noteToEdit);
   }, [noteToEdit]);
 
+  //---< rendering:
+  //---------------------------------------------------------------------------------------
   return (
     <form
       onSubmit={handleSubmit}
