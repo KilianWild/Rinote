@@ -57,6 +57,7 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
           ? note.text.slice(0, 250).replace(/\r?\n/g, " ").trim() + " ..."
           : note.text.replace(/\r?\n/g, " ").trim()}
       </p>
+      <p className="absolute bottom-1 left-2 text-zinc-500">{note.location}</p>
       <h4 className="absolute right-2 bottom-1">{note.inquiry}</h4>
     </li>
   );
