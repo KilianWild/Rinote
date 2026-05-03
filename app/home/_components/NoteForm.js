@@ -28,8 +28,8 @@ export default function NoteForm({ noteToEdit }) {
     //---< get location >---
     let location = "";
     try {
-      const latitude = 48.1427456;
-      const longitude = 11.5572736;
+      const latitude = 48.1427456; // temp fixed coordinate
+      const longitude = 11.5572736; // temp fixed coordinate
 
       const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
       const method = "GET";
