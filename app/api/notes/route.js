@@ -4,8 +4,8 @@ import Note from "@/db/models/Note";
 export async function GET() {
   await dbConnect();
 
-  const plants = await Note.find({}).sort({ _id: -1 });
-  return Response.json(plants, { status: 200 });
+  const notes = await Note.find({}).sort({ _id: -1 });
+  return Response.json(notes, { status: 200 });
 }
 
 export async function POST(request) {

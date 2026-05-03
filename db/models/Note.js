@@ -7,6 +7,7 @@ const NoteSchema = new Schema({
   title: { type: String },
   text: { type: String },
   inquiry: { type: String },
+  location: { type: String },
 });
 
 const Note = mongoose.models.Note || mongoose.model("Note", NoteSchema);

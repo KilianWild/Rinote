@@ -25,7 +25,38 @@ export default function NoteForm({ noteToEdit }) {
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
-    const newNote = { _id: !noteToEdit ? uuidv4() : noteToEdit._id, ...data };
+    //---< get location >---
+    let location = "";
+    try {
+      const latitude = 48.1427456; // temp fixed coordinate
+      const longitude = 11.5572736; // temp fixed coordinate
+
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
+      const method = "GET";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      location = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          noteToEdit
+            ? `${res.status} - Failed to update note!`
+            : `${res.status} - Failed to add note!`,
+        );
+      }
+    } catch (error) {
+      console.error("failed to get location", error);
+    }
+
+    //---< assemble note data >---
+    const newNote = {
+      _id: !noteToEdit ? uuidv4() : noteToEdit._id,
+      location: location.address.city,
+      ...data,
+    };
 
     //---< local storage handling >---
     if (!noteToEdit) setNotes([newNote, ...notes]);
@@ -36,22 +67,27 @@ export default function NoteForm({ noteToEdit }) {
         ),
       );
 
+    console.log("New Note: ", newNote);
     //---< database handling - "PUT" , "POST" >---
-    const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
-    const method = noteToEdit ? "PUT" : "POST";
+    try {
+      const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
+      const method = noteToEdit ? "PUT" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newNote),
-    });
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newNote),
+      });
 
-    if (!res.ok) {
-      throw new Error(
-        noteToEdit
-          ? `${res.status} - Failed to update note!`
-          : `${res.status} - Failed to add note!`,
-      );
+      if (!res.ok) {
+        throw new Error(
+          noteToEdit
+            ? `${res.status} - Failed to update note!`
+            : `${res.status} - Failed to add note!`,
+        );
+      }
+    } catch (error) {
+      console.error("failed to connect with database", error);
     }
 
     //---< reset form >---
