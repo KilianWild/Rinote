@@ -10,7 +10,7 @@ export default function NoteList() {
 
   function handleClickEdit(id) {
     const noteToEdit = notes.find((note) => note._id === id);
-    router.push(`/home?editid=${noteToEdit._id}`);
+    router.push(`/note-editor?editid=${noteToEdit._id}`);
   }
 
   async function handleClickDelete(id) {
@@ -31,7 +31,7 @@ export default function NoteList() {
   }
 
   useGesture(50, (direction) => {
-    if (direction === "left") router.push("/home");
+    if (direction === "left") router.push("/note-editor");
   });
 
   //---< rendering:

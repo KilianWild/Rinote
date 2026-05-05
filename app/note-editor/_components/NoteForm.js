@@ -25,10 +25,64 @@ export default function NoteForm({ noteToEdit }) {
     const formDataObject = new FormData(event.target);
     const data = Object.fromEntries(formDataObject);
 
+    //---< reset form >---
+    setFormData(formDefault);
+
+    function getPosition() {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        });
+      });
+    }
+
+    async function getLocation() {
+      try {
+        const position = await getPosition();
+        const { latitude, longitude } = position.coords;
+
+        const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
+        const res = await fetch(url, { method: "GET" });
+
+        if (!res.ok)
+          throw new Error(`${res.status} - Failed to acquire location!`);
+
+        return await res.json();
+      } catch (error) {
+        if (error instanceof GeolocationPositionError) {
+          switch (error.code) {
+            case 1:
+              console.warn("Permission denied");
+              break;
+            case 2:
+              console.warn("Position unavailable");
+              break;
+            case 3:
+              console.warn("Timeout");
+              break;
+          }
+        } else {
+          console.warn("Failed to fetch location:", error.message);
+        }
+        return;
+      }
+    }
+
+    const currentLocation = await getLocation();
+    const city =
+      currentLocation.address.city ??
+      currentLocation.address.town ??
+      currentLocation.address.village ??
+      currentLocation.address.municipality ??
+      currentLocation.address.county ??
+      " - ";
+
     //---< assemble note data >---
     const newNote = {
       _id: !noteToEdit ? uuidv4() : noteToEdit._id,
-      location: " - ",
+      location: city,
       ...data,
     };
 
@@ -40,33 +94,6 @@ export default function NoteForm({ noteToEdit }) {
           note._id === noteToEdit._id ? { _id: note.id, ...data } : note,
         ),
       );
-
-    //---< reset form >---
-    setFormData(formDefault);
-
-    //---< get location >---
-    let location = null;
-    try {
-      const latitude = 48.1427456; // temp fixed coordinate
-      const longitude = 11.5572736; // temp fixed coordinate
-
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
-      const method = "GET";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-      });
-
-      location = await res.json();
-
-      if (!res.ok) {
-        location = { adress: { city: " - " } };
-        throw new Error(`${res.status} - Failed to aquire location!`);
-      }
-    } catch (error) {
-      location = { adress: { city: " - " } };
-      console.error("failed to get location", error);
-    }
 
     //---< database handling - "PUT" , "POST" >---
     try {
