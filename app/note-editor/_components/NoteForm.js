@@ -85,8 +85,12 @@ export default function NoteForm({ noteToEdit }) {
         const position = await getPosition();
         const { latitude, longitude } = position.coords;
 
+        console.log("latitude ", latitude, " longitude ", longitude);
+
         const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
         const res = await fetch(url, { method: "GET" });
+
+        console.log("location ", res);
 
         if (!res.ok)
           throw new Error(`${res.status} - Failed to acquire location!`);
