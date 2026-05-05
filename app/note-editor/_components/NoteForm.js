@@ -118,7 +118,8 @@ export default function NoteForm({ noteToEdit }) {
 
     const currentLocation = await getLocation();
 
-    console.log("currentLocation", currentLocation.address.city);
+    console.log("currentLocation", currentLocation);
+    console.log("currentLocation CITY", currentLocation.address.city);
 
     //---< assemble note data >---
     const newNote = {
