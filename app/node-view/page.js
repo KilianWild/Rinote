@@ -45,8 +45,16 @@ export default function NodeView() {
     [setEdges],
   );
 
+  const handleClickEdit = useCallback(
+    (id) => {
+      //const noteToEdit = notes.find((note) => note._id === id);
+      router.push(`/note-editor?editid=${id}`);
+    },
+    [router],
+  );
+
   useEffect(() => {
-    initializeNodes(notes, setNodes);
+    initializeNodes(notes, setNodes, handleClickEdit);
   }, []);
 
   useGesture(50, (direction) => {
@@ -61,6 +69,7 @@ export default function NodeView() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        minZoom={0.1}
         fitView
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
@@ -72,11 +81,69 @@ export default function NodeView() {
   );
 }
 
-function initializeNodes(notes, setNodes) {
-  const deltaDist = 200;
+function initializeNodes(notes, setNodes, handleClickEdit) {
+  const deltaNoteDist = 200;
+  const deltaCenterDist = 3 * deltaNoteDist;
   const cardHeight = 140;
-  console.log("notes", notes);
 
+  //---< get node cluster >---
+  const notesSortedByCluster = notes.sort((a, b) =>
+    a.inquiry.localeCompare(b.inquiry, undefined, { numeric: true }),
+  );
+
+  const clusters = notesSortedByCluster.reduce((acc, note) => {
+    const lastCluster = acc[acc.length - 1];
+
+    if (lastCluster && lastCluster.cluster === note.inquiry)
+      lastCluster.notes.push(note);
+    else acc.push({ cluster: note.inquiry, notes: [note] });
+
+    return acc;
+  }, []);
+
+  console.log("clusters", clusters);
+
+  const nodeData = clusters.map((cluster, index) => {
+    //---< compute center node >---
+    const centerNode =
+      notes && notes.length > 0
+        ? {
+            id: `c${index}`,
+            position: { x: 0, y: 0 },
+            type: "center",
+            data: { inquiry: notes[0]?.inquiry },
+            height: cardHeight,
+          }
+        : null;
+
+    const cardNodes = notes.slice(0, 6).map((note, index) => {
+      const rotationShift = index <= 2 ? 0 : 60;
+
+      if (index >= 6) return;
+
+      return {
+        id: "n" + index,
+        position: {
+          x:
+            Math.cos(((90 + rotationShift + 120 * index) * Math.PI) / 180) *
+            deltaNoteDist,
+          y:
+            Math.sin(((90 + rotationShift + 120 * index) * Math.PI) / 180) *
+            deltaNoteDist,
+        },
+        type: "note",
+        height: cardHeight,
+        data: {
+          note: note,
+          onClickEdit: handleClickEdit,
+          deltaNoteDist: deltaNoteDist,
+          deltaCenterDist: deltaCenterDist,
+        },
+      };
+    });
+  });
+
+  //---< position center node >---
   const centerNode =
     notes && notes.length > 0
       ? {
@@ -88,7 +155,8 @@ function initializeNodes(notes, setNodes) {
         }
       : null;
 
-  const cardNotes = notes.slice(0, 6).map((note, index) => {
+  //---< position card nodes >---
+  const cardNodes = notes.slice(0, 6).map((note, index) => {
     const rotationShift = index <= 2 ? 0 : 60;
 
     if (index >= 6) return;
@@ -98,28 +166,28 @@ function initializeNodes(notes, setNodes) {
       position: {
         x:
           Math.cos(((90 + rotationShift + 120 * index) * Math.PI) / 180) *
-          deltaDist,
+          deltaNoteDist,
         y:
           Math.sin(((90 + rotationShift + 120 * index) * Math.PI) / 180) *
-          deltaDist,
+          deltaNoteDist,
       },
       type: "note",
-      data: { title: note.title, location: note.location },
       height: cardHeight,
+      data: {
+        note: note,
+        onClickEdit: handleClickEdit,
+        deltaNoteDist: deltaNoteDist,
+        deltaCenterDist: deltaCenterDist,
+      },
     };
   });
-  console.log("[centerNode ? [centerNode] : [], ...cardNotes]", [
-    centerNode ? [centerNode] : [],
-    ...cardNotes,
-  ]);
-  console.log("centerNode", centerNode);
-  setNodes([...(centerNode ? [centerNode] : []), ...cardNotes]);
+
+  setNodes([...(centerNode ? [centerNode] : []), ...cardNodes]);
 }
 
 const initialEdges = Array.from({ length: 6 }, (_, i) => {
   return { id: "c1-n" + i, source: "c1", target: "n" + i, type: "floating" };
 });
-console.log("initialEdges", initialEdges);
 
 const edgeTypes = {
   floating: FloatingEdge,

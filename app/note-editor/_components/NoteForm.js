@@ -71,12 +71,13 @@ export default function NoteForm({ noteToEdit }) {
     }
 
     const currentLocation = await getLocation();
+
     const city =
-      currentLocation.address.city ??
-      currentLocation.address.town ??
-      currentLocation.address.village ??
-      currentLocation.address.municipality ??
-      currentLocation.address.county ??
+      currentLocation?.address?.city ??
+      currentLocation?.address?.town ??
+      currentLocation?.address?.village ??
+      currentLocation?.address?.municipality ??
+      currentLocation?.address?.county ??
       " - ";
 
     //---< assemble note data >---
@@ -84,6 +85,7 @@ export default function NoteForm({ noteToEdit }) {
       _id: !noteToEdit ? uuidv4() : noteToEdit._id,
       location: city,
       ...data,
+      reference: "",
     };
 
     //---< local storage handling >---
@@ -120,7 +122,7 @@ export default function NoteForm({ noteToEdit }) {
 
   function handleClearForm() {
     setFormData(formDefault);
-    if (isEditing) router.push("/home");
+    if (isEditing) router.push("/note-editor");
   }
 
   //---< wait for mounting complete >---
