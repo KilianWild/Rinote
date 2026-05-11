@@ -22,6 +22,21 @@ export function CardNode({ height, data }) {
         {note.location}
       </div>
 
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="pointer-events-none opacity-0"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="pointer-events-none opacity-0"
+      />
+    </div>
+  );
+}
+
+/*
       <div
         style={{
           width: `${deltaCenterDist * 2}px`,
@@ -37,17 +52,4 @@ export function CardNode({ height, data }) {
         }}
         className="absolute rounded-full border border-dashed border-cyan-700 bg-transparent"
       ></div>
-
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="pointer-events-none opacity-0"
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="pointer-events-none opacity-0"
-      />
-    </div>
-  );
-}
+*/
