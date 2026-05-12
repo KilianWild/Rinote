@@ -33,8 +33,9 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
           <span className="h-px w-full bg-zinc-400"></span>
           <span className="h-px w-full bg-zinc-400"></span>
         </button>
+
         {menuExpanded && (
-          <div className="absolute right-0 flex h-14 w-20 flex-col border border-zinc-700 bg-zinc-800">
+          <div className="absolute right-0 z-100 flex h-14 w-20 flex-col border border-zinc-700 bg-zinc-800">
             <button
               onClick={() => onClickEdit(note._id)}
               className="0 w-full flex-1 border-b border-zinc-700"
@@ -42,7 +43,10 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
               Edit
             </button>
             <button
-              onClick={() => onClickDelete(note._id)}
+              onClick={() => {
+                setMenuExpanded(false);
+                onClickDelete(note._id);
+              }}
               className="w-full flex-1"
             >
               Delete

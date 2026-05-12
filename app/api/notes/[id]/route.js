@@ -5,8 +5,8 @@ export async function PUT(request, { params }) {
   await dbConnect();
 
   const { id } = await params;
-  const body = await request.json();
-  const updated = await Note.findByIdAndUpdate(id, body, {
+  const notes = await request.json();
+  const updated = await Note.findByIdAndUpdate(id, notes, {
     returnDocument: "after",
   });
 

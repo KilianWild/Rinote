@@ -5,7 +5,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 
-import logger from "@/lib/logger";
+import { notesApiPutPost } from "@/lib/api";
 
 export default function NoteForm({ noteToEdit }) {
   const router = useRouter();
@@ -100,58 +100,8 @@ export default function NoteForm({ noteToEdit }) {
       );
 
     //---< database handling - "PUT" , "POST" >---
-    try {
-      const url = `/api/notes${noteToEdit ? "/" + newNote._id : ""}`;
-      const method = noteToEdit ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newNote),
-      });
-
-      if (!res.ok) {
-        throw new Error(
-          noteToEdit
-            ? `${res.status} - Failed to update note!`
-            : `${res.status} - Failed to add note!`,
-        );
-      }
-    } catch (error) {
-      console.error("failed to connect with database", error);
-    }
-
-    const aiResponse = { data: "" };
-
-    //---< ai contextual process request - "POST" >---
-    try {
-      const url = `/api/gemini`;
-      const method = "POST";
-
-      const task = `the task is to return me an array of objectes with the same number of notes that were sent. And create referencelink them so that node trees can be build. If no "theme of inquiry" (center node) is given, then the note is eithr
-      to be referenced to an existing theme/node or a new theme of inquiry is to be named. If no note is given, then that means the note was already placed and destilled into a short description and 5 tags and referenced.`;
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task, quote1, quote2 }),
-      });
-
-      if (!res.ok) {
-        throw new Error(
-          `${res.status} - contextual processing request failed!`,
-        );
-      }
-
-      aiResponse.data = await res.json();
-    } catch (error) {
-      console.error("failed to connect with ai service", error);
-    }
-
-    logger.ai(
-      "The following data has been computed by gimini ai >",
-      aiResponse.data,
-    );
+    if (noteToEdit) notesApiPutPost("PUT", newNote, noteToEdit._id);
+    else notesApiPutPost("POST", newNote);
   }
 
   function handleClearForm() {
@@ -209,16 +159,6 @@ export default function NoteForm({ noteToEdit }) {
         }
         value={formData.inquiry}
         placeholder="Theme of Inquiry"
-        className="right-0 mt-0 w-[80%] self-end border-b-2 border-[#4a4a6a] px-2 pb-2 text-sm focus:outline-none"
-      />
-      <input
-        name="reference"
-        type="text"
-        onChange={(event) =>
-          setFormData((prev) => ({ ...prev, reference: event.target.value }))
-        }
-        value={formData.reference}
-        placeholder="Reference"
         className="right-0 mt-0 w-[80%] self-end border-b-2 border-[#4a4a6a] px-2 pb-2 text-sm focus:outline-none"
       />
 
