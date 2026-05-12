@@ -53,7 +53,7 @@ export async function POST(request) {
               inquiry: {
                 type: "string",
                 description:
-                  "The specific theme or question this note addresses.",
+                  "The theme or question this note belongs to. Use existing theme names if applicable; otherwise, create a new, concise title.",
               },
               descrapancyRefs: {
                 type: "array",
@@ -64,11 +64,20 @@ export async function POST(request) {
               referenceLink: {
                 type: "string",
                 description: `The _id of the parent node. 
-                  LOGIC RULES:
-                  1. Use an empty string '' only for the absolute Center Node of the inquiry.
-                  2. Max 6 direct children allowed for the Center Node.
-                  3. If the Center Node has 6 children, link this note to an existing child node instead.
-                  4. If a note is unrelated to the existing theme, assign it a new independent root (empty string).`,
+                  1. THEME IDENTIFICATION: 
+                     - Determine if the note belongs to an existing 'inquiry' theme or requires a new one.
+                     - If no compatible theme exists, assign an empty string ('') to create a new independent Center Node.
+
+                  2. CENTER NODE ASSIGNMENT (THEME ROOT):
+                     - If this note is the primary foundation of an inquiry, assign an empty string ('').
+                     - A Center Node (empty string) can have a MAXIMUM of 6 direct children.
+
+                  3. HIERARCHICAL MAPPING:
+                     - If the relevant Center Node already has 6 direct children, you MUST NOT link to the Center Node.
+                     - Instead, link the note to an existing child node within that same theme to maintain a branching tree structure.
+
+                  4. EXCLUSION/NEW THEME:
+                     - If a note is unrelated to all existing themes, treat it as a new topic and assign an empty string ('') to start a new independent root node.`,
               },
               inquiryopen: {
                 type: "boolean",
