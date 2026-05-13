@@ -17,8 +17,6 @@ export default function NoteCard({ note, onClickEdit, onClickDelete }) {
     window.addEventListener("click", (event) => handleClickOutside(event));
   }, []);
 
-  console.log("note", note);
-
   //---< rendering:
   //---------------------------------------------------------------------------------------
   return (

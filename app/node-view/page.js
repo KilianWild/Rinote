@@ -296,11 +296,6 @@ function initializeNodes(notes, setNodes, setEdges, handleClickEdit) {
 
     const centerId = `c${clusterIndex}`;
 
-    console.log(
-      " enrichedClusters[clusterIndex]",
-      enrichedClusters[clusterIndex],
-    );
-
     // ---< determine center node type >---
     let nodeType = null;
     if (
@@ -321,10 +316,6 @@ function initializeNodes(notes, setNodes, setEdges, handleClickEdit) {
     else if (!enrichedClusters[clusterIndex].cluster)
       nodeType = "centerUnnamed";
     else nodeType = "center";
-
-    console.log("nodeType", nodeType);
-
-    console.log("------------------------------------------------------------");
 
     // ---< center node = Theme of Inquiry label >---
     rfNodes.push({
