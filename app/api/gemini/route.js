@@ -128,7 +128,8 @@ export async function POST(request) {
                 type: "boolean",
                 description: ` Automatically true if directQuestion == true
                   Also True if the note poses a new question AND REQUIRES further exploration to be able stand as it is. False if it provides an answer or is a factual statement.
-                  IMPORTANT: Don't overuse that. Only use it if the note is meaningfull, but has partial information where it is evident that it is only partial to help complete a thought, not to lead towards evey note being ULTIMATELY coherent and complete`,
+                  IMPORTANT: Don't overuse that. Only use it if the note is meaningfull, but has partial information where it is visibly only partial, to help complete a thought, not to lead towards evey note being ULTIMATELY coherent and complete. 
+                  So words of uncertainty within the note as well as facts already knwon missing in the note would trigger that e.g.`,
               },
 
               referenceReasoning: {
